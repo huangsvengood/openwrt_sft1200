@@ -7,6 +7,21 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
+define Device/SF19A28-AC28NAND
+  ATH_SOC := sf19a28
+  DEVICE_TITLE := GL-SFT1200
+  KERNEL_SIZE := 4096k
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  VID_HDR_OFFSET := 2048
+  IMAGES += factory.img sysupgrade.tar
+  IMAGE/sysupgrade.tar := sysupgrade-tar
+  IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
+endef
+
+
+TARGET_DEVICES += SF19A28-AC28NAND
+
 define get_kernel_entry
 0x$(shell $(TARGET_CROSS)nm $(1) 2>/dev/null | grep " kernel_entry" | cut -f1 -d ' ')
 endef

@@ -6,15 +6,17 @@
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-	compatible = "siflower,sf19a28-soc";
-	model = "sf19a28-ac28";
-
+	compatible = "glinet,gl-sft1200", "siflower,sf19a28-soc";
+	model = "GL-SFT1200";
+	//bootargs: chosen {
+	//	bootargs = " ubi.mtd=5 rootfstype=ubifs root=/dev/mtd5";
+	//};
 };
 
 &gmac {
 	status = "okay";
-	delay = <0x40 0x20>;
-	esw-rst-gpio = <11>;
+	delay = <0x17 0x17>;
+	esw-rst-gpio = <0>;
 };
 
 &spi2 {
@@ -27,7 +29,7 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 
-	spi_nand@0 {
+	spi-nand@0 {
 		compatible = "spi-nand";
 		reg = <0>;	/* chip select */
 		spi-max-frequency = <33000000>;
@@ -46,28 +48,37 @@
 		partition@20000 {
 			label = "u-boot";
 			reg = <0x20000 0x60000>; /* 384k */
+			read-only;
 		};
 
 		partition@80000 {
 			label = "u-boot-env";
 			reg = <0x80000 0x20000>; /* 128k */
+			read-only;
 		};
 
 		factory:partition@a0000 {
 			label = "factory";
 			reg = <0xa0000 0x20000>; /* 128k */
+			read-only;
 		};
 
 		partition@c0000 {
 			label = "firmware";
-			reg = <0xc0000 0x7f40000>; /* 768k-128M */
+			reg = <0xc0000 0x7f400000>; /* 768k-128M */
 		};
+
 	};
 };
 
 &uart0 {
 	status = "okay";
 };
+
+&watchdog {
+	status = "okay";
+};
+
 &timer0 {
 	status = "okay";
 };
@@ -80,19 +91,36 @@
        status = "okay";
 };
 
+&i2c0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	et6326@11{
+		compatible = "ET6326";
+		reg = <0x30>;
+	};
+};
+
 &wifi_rf {
 	status = "okay";
     /*only support ext pa for 5G*/
-	force_expa = <1>;
-    dual-antenna-calibrate = <1>;
+	//force_expa = <1>;
 };
 
 &gpio_keys {
 	status = "okay";
 	restart@27 {
 		label = "Key Restart";
-		linux,code = <0x198>;
-		gpios = <&gpio 27 0>;
+		linux,code = <0x198>; //KEY_RESTART
+		gpios = <&gpio 27 1>;
+		poll-interval = <10>;
+		debounce-interval = <20>;
+	};
+	
+	switch@1 {
+		label = "BTN_0";
+		linux,code = <0x100>; //BTN_0
+		gpios = <&gpio 1 1>;
 		poll-interval = <10>;
 		debounce-interval = <20>;
 	};
@@ -103,7 +131,7 @@
 
 	#address-cells = <1>;
 	#size-cells = <0>;
-	gpio-leds = <&gpio 12 0>;
+	//gpio-leds = <&gpio 12 0>;
 	smp-affinity = <2>;
 };
 
@@ -112,6 +140,6 @@
 
 	#address-cells = <1>;
 	#size-cells = <0>;
-	gpio-leds = <&gpio 12 0>;
+	//gpio-leds = <&gpio 12 0>;
 	smp-affinity = <3>;
 };
