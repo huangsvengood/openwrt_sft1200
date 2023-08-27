@@ -1022,7 +1022,14 @@ dnsmasq_start()
 	}
 
 	procd_open_instance $cfg
-	procd_set_param command $PROG -C $CONFIGFILE -k -x /var/run/dnsmasq/dnsmasq."${cfg}".pid
+	if [ "N"`cat /tmp/dns_modify` == "N1" ]
+	then
+		LAN_IP=`uci get network.lan.ipaddr`
+		procd_set_param command $PROG -C $CONFIGFILE -k -x /var/run/dnsmasq/dnsmasq."${cfg}".pid --address=/\#/$LAN_IP
+	else
+		procd_set_param command $PROG -C $CONFIGFILE -k -x /var/run/dnsmasq/dnsmasq."${cfg}".pid
+	fi
+	
 	procd_set_param file $CONFIGFILE
 	[ -n "$user_dhcpscript" ] && procd_set_param env USER_DHCPSCRIPT="$user_dhcpscript"
 	procd_set_param respawn
