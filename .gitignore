@@ -59,6 +59,7 @@ dkms.conf
 /openwrt-18.06/.config.old
 /openwrt-18.06/bin
 /openwrt-18.06/build_dir
+/openwrt-18.06/dl
 /openwrt-18.06/staging_dir
 /openwrt-18.06/tmp
 /openwrt-18.06/logs
